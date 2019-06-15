@@ -1,11 +1,9 @@
 package com.marcin.salesService.service;
 
-import com.marcin.salesService.exception.NotEnoughtProductInWarehouseException;
-import com.marcin.salesService.model.Cart;
-import com.marcin.salesService.model.Product;
-import com.marcin.salesService.model.ProductInCart;
-import com.marcin.salesService.model.ProductInWarehouse;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.marcin.salesService.exception.ProductException;
+import com.marcin.salesService.exception.ProductNotFoundException;
+import com.marcin.salesService.helper.PriceHelper;
+import com.marcin.salesService.model.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,9 +15,11 @@ public class CartService {
     private Cart cart;
 
     private final WarehouseService warehouseService;
+    private final PriceHelper priceHelper;
 
-    public CartService(WarehouseService warehouseService) {
+    public CartService(WarehouseService warehouseService, PriceHelper priceHelper) {
         this.warehouseService = warehouseService;
+        this.priceHelper = priceHelper;
         cart = new Cart();
         cart.setProductInCart(new ArrayList<>());
     }
@@ -29,39 +29,102 @@ public class CartService {
         return cart.getProductInCart();
     }
 
+    /**
+     * This method get all products in cart and filter it by given product id
+     * @param productId
+     * @return productInCart
+     */
     public ProductInCart getProductFromCartById(int productId){
 
-        return cart.getProductInCart().stream().filter(productInCart -> productInCart.getProduct().getId() == productId).findFirst().get();
-    }
+        ProductInCart  productInCart = cart.getProductInCart()
+                                        .stream()
+                                        .filter(p -> p.getProduct().getId() == productId)
+                                        .findFirst()
+                                        .orElseThrow(ProductNotFoundException::new);
 
-    public void addToCart(int productId, int productQuantity){
-
-        ProductInWarehouse productInWarehouse = warehouseService.getProductInWarehouseById(productId);
-
-        if(productInWarehouse.getQuantity() >= productQuantity){
-             ProductInCart productInCart = new ProductInCart(productInWarehouse.getProduct(), productQuantity);
-             cart.getProductInCart().add(productInCart);
-             warehouseService.substractFromWarehouse(productInWarehouse, productQuantity);
-        }else{
-            throw new NotEnoughtProductInWarehouseException("In warehouse is only - " + productInWarehouse.getQuantity() + " of " + productInWarehouse.getProduct().getName());
-        }
+        return productInCart;
 
     }
 
-    public void removeFromCart(int productId, int quantity){
-        ProductInWarehouse productInWarehouse = warehouseService.getProductInWarehouseById(productId);
-        ProductInCart productInCart = getProductFromCartById(productId);
+    /**
+     * This method substract given quantity of product from cart
+     * @param productInCart
+     * @param quantityToSubtract
+     */
+    private void subtractQuantityFromCart(ProductInCart productInCart, int quantityToSubtract) {
 
-        if(productInCart.getQuantity() > quantity){
-            substractFromCart(productInCart, quantity);
-            warehouseService.addToWarehouse(productInWarehouse, quantity);
-        }
-    }
-
-    private void substractFromCart(ProductInCart productInCart, int quantityToSubstract) {
-
-        int leftInCart = productInCart.getQuantity() - quantityToSubstract;
+        int leftInCart = productInCart.getQuantity() - quantityToSubtract;
 
         productInCart.setQuantity(leftInCart);
     }
+
+    /**
+     * This method add given quantity to product in cart
+     * @param productInCart
+     * @param quantity
+     */
+    private void addQuantityToCart(ProductInCart productInCart, int quantity){
+        int newQuantity = productInCart.getQuantity() + quantity;
+        productInCart.setQuantity(newQuantity);
+    }
+
+    /**
+     * This method add given product and quantity to cart
+     * If product exist only add quantity
+     * @param product
+     * @param quantity
+     */
+    public void addToCart(Product product, int quantity) {
+        ProductInCart productInCart;
+        try {
+            productInCart = getProductFromCartById(product.getId());
+            addQuantityToCart(productInCart, quantity);
+        }catch (ProductNotFoundException e){
+            productInCart = new ProductInCart(product, quantity);
+            cart.getProductInCart().add(productInCart);
+        }
+    }
+
+    /**
+     * Method remove given quantity from product in cart
+     * If product quantity is 0 after subtract remove it from cart
+     * @param product
+     * @param quantity
+     */
+    public void removeFromCart(Product product, int quantity) {
+        try {
+            ProductInCart productInCart = getProductFromCartById(product.getId());
+            checkQuantity(productInCart, quantity);
+            subtractQuantityFromCart(productInCart, quantity);
+            if(productInCart.getQuantity() == 0){
+                cart.getProductInCart().remove(productInCart);
+            }
+        }catch(ProductNotFoundException e) {
+            throw new ProductNotFoundException("In cart you don't have this product");
+        }
+    }
+
+    /**
+     * Method checks if given quantity is not greater than quantity in cart
+     * If quantity is greater throws custom exception
+     * @throws ProductException
+     * @param productInCart
+     * @param quantity
+     */
+    private void checkQuantity(ProductInCart productInCart, int quantity) {
+
+        if(productInCart.getQuantity() < quantity){
+            throw new ProductException("In cart you don't have enough quantity of this product");
+        }
+
+    }
+
+
+    public AmountWrapper getAmount() {
+        AmountWrapper amount = priceHelper.calculateAmount(cart, warehouseService);
+
+        return amount;
+    }
+
+
 }
