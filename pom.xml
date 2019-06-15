@@ -77,8 +77,6 @@
         </dependency>
 
 
-
-
     </dependencies>
 
     <!-- Support for Maven WAR Plugin -->
