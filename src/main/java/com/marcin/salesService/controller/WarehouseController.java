@@ -24,11 +24,18 @@ public class WarehouseController {
         this.warehouseService = warehouseService;
     }
 
+    /**
+     * @return List of all products in warehouse
+     */
     @GetMapping("/warehouse")
     private List<ProductInWarehouse> getProductsInWarehouse(){
         return warehouseService.getProductsInWarehouse();
     }
 
+    /**
+     * @param productID
+     * @return Return product in warehouse based on product id
+     */
     @GetMapping("/warehouse/{productID}")
     private ProductInWarehouse getProductInWarehouseById(@PathVariable int productID){
 
