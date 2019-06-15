@@ -76,6 +76,21 @@
             <version>6.0.16.Final</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-el-api</artifactId>
+            <version>9.0.21</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jasper-el</artifactId>
+            <version>9.0.21</version>
+        </dependency>
+
+
+
+
 
     </dependencies>
 
@@ -99,6 +114,14 @@
                         <target>1.8</target>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.apache.tomcat.maven</groupId>
+                    <artifactId>tomcat7-maven-plugin</artifactId>
+                    <version>2.2</version>
+                    <configuration>
+                        <port>9090</port>
+                    </configuration> </plugin>
 
             </plugins>
         </pluginManagement>
