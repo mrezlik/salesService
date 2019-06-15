@@ -1,6 +1,5 @@
 package com.marcin.salesService.controller;
 
-import com.marcin.salesService.exception.ProductException;
 import com.marcin.salesService.exception.ProductErrorResponse;
 import com.marcin.salesService.exception.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
