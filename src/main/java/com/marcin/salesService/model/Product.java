@@ -21,13 +21,4 @@ public class Product {
     @Column
     private String name;
 
-    @Column
-    private float price;
-
-    @Column
-    private float discountPrice;
-
-    @Column
-    private int quantityToDiscount;
-
 }
