@@ -20,5 +20,12 @@ public class ProductInWarehouse {
     private Product product;
 
     @Column
-    private int quantity;
+    private float price;
+
+    @Column
+    private float discountPrice;
+
+    @Column
+    private int quantityToDiscount;
+
 }
