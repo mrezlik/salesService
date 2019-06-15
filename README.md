@@ -15,9 +15,10 @@ To run this app:
 7. Go to host:port/salesSerive/api/cart to see all product in cart
 8. Go to host:port/salesSerive/api/cart/amount to see sum of price of item in cart
 
-Sample request to add/remove given quantity of item to cart:
+Sample request body to add/remove given quantity of item to cart (you can use Postman as example to send post/delete request):
 
 {
   "productId": 1,
   "quantity": 10
 }
+
