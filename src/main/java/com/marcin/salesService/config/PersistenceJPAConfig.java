@@ -38,10 +38,10 @@ public class PersistenceJPAConfig {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUsername("springstudent");
-        dataSource.setPassword("springstudent");
+        dataSource.setUsername("username");
+        dataSource.setPassword("password");
         dataSource.setUrl(
-                "jdbc:mysql://localhost:3306/sales_service?serverTimezone=UTC");
+                "jdbc:mysql://host:port/sales_service?serverTimezone=UTC");
 
         return dataSource;
     }
@@ -59,7 +59,7 @@ public class PersistenceJPAConfig {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
-    Properties additionalProperties() {
+    private Properties additionalProperties() {
         Properties properties = new Properties();
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
 
