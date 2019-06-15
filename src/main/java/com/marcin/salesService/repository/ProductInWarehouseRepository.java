@@ -10,6 +10,5 @@ import java.util.List;
 public interface ProductInWarehouseRepository extends JpaRepository<ProductInWarehouse, Integer> {
 
     List<ProductInWarehouse> findAll();
-    ProductInWarehouse findById(int id);
 
 }
