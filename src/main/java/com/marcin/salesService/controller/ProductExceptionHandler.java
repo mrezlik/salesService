@@ -1,17 +1,19 @@
 package com.marcin.salesService.controller;
 
-import com.marcin.salesService.exception.NotEnoughtProductInWarehouseException;
+import com.marcin.salesService.exception.ProductException;
 import com.marcin.salesService.exception.ProductErrorResponse;
+import com.marcin.salesService.exception.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class WarehouseExceptionHandler {
+public class ProductExceptionHandler {
+
 
     @ExceptionHandler
-    public ResponseEntity<ProductErrorResponse> handleException(NotEnoughtProductInWarehouseException e){
+    public ResponseEntity<ProductErrorResponse> handleException(ProductNotFoundException e){
 
         ProductErrorResponse error = new ProductErrorResponse();
 
